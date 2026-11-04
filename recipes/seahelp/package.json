@@ -1,0 +1,15 @@
+{
+  "id": "seahelp",
+  "name": "Sea Help",
+  "version": "1.0.0",
+  "license": "MIT",
+  "repository": "https://github.com/your-org/seadesk",
+  "config": {
+    "serviceURL": "http://localhost:3100/help",
+    "hasDirectMessages": true,
+    "hasIndirectMessages": false,
+    "hasNotificationSound": false,
+    "hasTeamId": false,
+    "urlInputSuggestion": "http://localhost:3100/help"
+  }
+}
