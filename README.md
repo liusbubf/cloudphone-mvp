@@ -16,6 +16,39 @@
 
 面向受困者的功能都按"被发现就会危及当事人"来设计：不发起第三方请求、不留本机副本、可一键退回、受理编号带随机后缀不可枚举；服务端记录 90 天自动清理。
 
+## 一键部署
+
+前置：Docker Desktop（本地）或 Docker Engine + Compose 插件（服务器）。两端命令相同。
+
+```bash
+git clone https://github.com/liusbubf/cloudphone-mvp.git
+cd cloudphone-mvp
+./scripts/deploy.sh --demo
+```
+
+脚本依次完成：复制 `.env.example` 为 `.env` → 生成随机接应端令牌 → 构建镜像 → 启动容器 → 轮询 `/api/health` 直到通过 → 打印地址与令牌。
+
+| 场景 | 命令 |
+| --- | --- |
+| 带演示数据启动 | `./scripts/deploy.sh --demo`（首次启动写入 4 条虚构记录） |
+| 正式启动 | `./scripts/deploy.sh`（不加 `--demo`，`DEMO_MODE=0`） |
+| 改端口 | 编辑 `.env` 的 `PORT`，重新执行脚本 |
+| 查看日志 | `docker compose logs -f sea-desk` |
+| 更新版本 | `git pull && ./scripts/deploy.sh` |
+| 停止 / 连数据一起删 | `docker compose down` / `docker compose down -v` |
+
+数据存在 Docker 命名卷 `relay_data`（容器内 `/app/.data`），`down` 不会丢，`down -v` 才会清空。
+
+不用 Docker 也可以直接在服务器跑：
+
+```bash
+npm ci
+npm run build
+RELAY_CONSOLE_TOKEN=<你的令牌> npm start
+```
+
+生产环境请在前面加 Nginx 或 Caddy 终止 HTTPS，只对外暴露 443，`3100` 不要直接暴露公网。
+
 ## 模块
 
 - `app/page.tsx` 总览：KPI、渠道入站分布、高风险队列、最近审计、求助渠道
@@ -28,6 +61,8 @@
 - `app/audit` 审计与合规：完整日志、CSV 导出、留存与限速策略
 - `app/console` 机构后台：令牌鉴权、求助列表、状态流转、家属转达
 - `app/api/relay` 中继接口：公开提交、编号查询，以及鉴权的列表/流转/转达接口
+- `app/api/health` 健康检查：容器健康探针与部署脚本等待就绪使用
+- `scripts/deploy.sh` 一键部署；`scripts/seed-demo.mjs` 演示数据；`scripts/sms-self-test.mjs` 短信自检
 - `app/channels` 渠道账号：连接状态、接入前检查清单、团队成员
 
 ## 与 Ferdium 集成
