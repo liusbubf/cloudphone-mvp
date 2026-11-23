@@ -26,7 +26,9 @@ export interface RelayRecord {
   notifiedAt?: string;
 }
 
-const DIR = path.join(process.cwd(), ".data");
+const DIR = process.env.RELAY_DATA_DIR
+  ? path.resolve(process.env.RELAY_DATA_DIR)
+  : path.join(process.cwd(), ".data");
 const FILE = path.join(DIR, "relay.json");
 const AUDIT_FILE = path.join(DIR, "relay-audit.json");
 const RETENTION_DAYS = Number(process.env.RELAY_RETENTION_DAYS ?? "90");
