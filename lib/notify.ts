@@ -16,7 +16,9 @@ export interface OutboxEntry {
   provider?: string;
 }
 
-const DIR = path.join(process.cwd(), ".data");
+const DIR = process.env.RELAY_DATA_DIR
+  ? path.resolve(process.env.RELAY_DATA_DIR)
+  : path.join(process.cwd(), ".data");
 const OUTBOX = path.join(DIR, "relay-outbox.json");
 
 export function buildSmsSegments(record: RelayRecord): string[] {
